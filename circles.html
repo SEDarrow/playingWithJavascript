@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html>
+<body id="body">
+  <textarea name="message" id="message" rows="1" cols="30" onkeydown="update(event)"></textarea> <br/>
+
+  <canvas id="canvas" width="500" height="500"></canvas>
+  <button type="button" onclick="displaySetter()">Change Letter Settings</button>
+  <p id="test"></p>
+
+  <script>
+      var colors = {"a": [10, 0, 0],
+                    "b": [0, 0, 10],
+                    "c": [5, 5, 0],
+                    "d": [0, 0, 10],
+                    "e": [10, 0, 0],
+                    "f": [0, 0, 10],
+                    "g": [0, 10, 0],
+                    "h": [10, 0, 0],
+                    "i": [0, 0, 10],
+                    "j": [4, 0, 6],
+                    "k": [5, 4, 1],
+                    "l": [4, 0, 6],
+                    "m": [0, 6, 4],
+                    "n": [0, 8, 2],
+                    "o": [4, 6, 0],
+                    "p": [0, 2, 8],
+                    "q": [3, 7, 0],
+                    "r": [9, 1, 0],
+                    "s": [1, 8, 1],
+                    "t": [8, 2, 0],
+                    "u": [0, 3, 7],
+                    "v": [0, 2, 8],
+                    "w": [0, 1, 9],
+                    "x": [10, 0, 0],
+                    "y": [5, 5, 0],
+                    "z": [6, 0, 4]};
+              
+          var MIN = 5;
+          var MAX = 15 - MIN;
+          var radius = 0;
+
+          var centerX = Math.floor(Math.random()*(canvas.width));
+          var centerY = Math.floor(Math.random()*(canvas.height));
+
+      function displaySetter() {
+           var total;
+           var curr;
+
+           getElementById("test").innerHTML = "here";
+           
+           for(var letter in colors) {
+               total = 10;
+               for(var i = 0; i < 2; i++) {
+                    var curr = Math.floor(Math.random()*total);
+                    colors.letter[i] = curr;
+                    total -= curr;
+               }
+               colors.letter[2] = total;
+           }
+      }
+
+      function update(event) {
+          if(event.keyCode == 8) return;
+
+          var input = document.getElementById("message").value;
+          var len = input.length;
+          if(event.keyCode == 32 || event.keyCode == 13) {
+               newSpot(input);
+               document.getElementById("message").value = "";
+          }
+          else {
+              addColor(input);
+          }
+      }
+    
+      function newSpot(string) {
+          var canvas = document.getElementById("canvas");
+          var ctx = canvas.getContext("2d");
+          ctx.font = "30px Arial";
+          ctx.fillStyle = "black";
+          centerX -= radius;
+          centerY += 15;
+          ctx.fillText(string, centerX, centerY);
+
+          radius = 0;
+          centerX = Math.floor(Math.random()*(canvas.width));
+          centerY = Math.floor(Math.random()*(canvas.height));
+          
+      }
+
+
+      function addColor(string) {
+          var canvas = document.getElementById("canvas");
+          var ctx = canvas.getContext("2d");
+
+          radius += Math.floor(Math.random()*MAX + MIN);
+
+          ctx.fillStyle = generateColor(string);
+          ctx.beginPath();
+          ctx.arc(centerX, centerY, radius, 0, 2 * Math.PI, false);
+          ctx.closePath();
+          ctx.fill();
+ 
+
+      }
+
+
+
+      function generateColor(string) {
+         var total = [0, 0, 0];
+         var spaces = 0;
+         for(var i = string.length-1; i >= 0; i--) {
+
+             if(string.charAt(i) == " ") break;
+             else {
+                total[0]+=colors[string.charAt(i)][0];
+                total[1]+=colors[string.charAt(i)][1];
+                total[2]+=colors[string.charAt(i)][2];
+             }
+         }
+         return toColor(total).toUpperCase();
+      }
+   
+      function toColor(arr) {
+          var red = arr[0];
+          var blue = arr[1];
+          var green = arr[2];
+
+          var ratio = 255/Math.max(red, blue, green);
+
+          red*=ratio;
+          blue*=ratio;
+          green*=ratio;
+
+          red = Math.floor(red).toString(16);
+          blue = Math.floor(blue).toString(16);
+          green = Math.floor(green).toString(16);
+
+          if(red.length < 2) red = "0"+red;
+          if(blue.length < 2) blue = "0"+blue;
+          if(green.length < 2) green = "0"+green;
+
+          return  "#"+red+blue+green;
+      }
+
+
+  </script>
+</body>
+</html>
